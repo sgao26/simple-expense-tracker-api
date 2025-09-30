@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <h1>Expense Tracker</h1>
+    
+    <h2>Add Expense</h2>
+    <form id="expenseForm">
+        <p>Description: <input type="text" id="description" required></p>
+        <p>Amount: <input type="number" id="amount" step="0.01" required></p>
+        <p>Category: <input type="text" id="category" required></p>
+        <p>Date: <input type="date" id="date" required></p>
+        <button type="submit">Add</button>
+    </form>
+    
+    <h2>Expenses</h2>
+    <button onclick="loadExpenses()">Refresh</button>
+    <div id="expensesList"></div>
+    
+    <script>
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('expenseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const expense = {
+                description: document.getElementById('description').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                category: document.getElementById('category').value,
+                date: document.getElementById('date').value
+            };
+            
+            const response = await fetch('/expenses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(expense)
+            });
+            
+            alert('Expense added!');
+            document.getElementById('expenseForm').reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            loadExpenses();
+        });
+        
+        async function loadExpenses() {
+            const response = await fetch('/expenses');
+            const expenses = await response.json();
+            
+            const container = document.getElementById('expensesList');
+            if (expenses.length === 0) {
+                container.innerHTML = '<p>No expenses</p>';
+            } else {
+                container.innerHTML = expenses.map(expense => 
+                    `<p>${expense.description} - $${expense.amount} (${expense.category}) - ${expense.date}</p>`
+                ).join('');
+            }
+        }
+        
+        loadExpenses();
+    </script>
+</body>
+</html>
