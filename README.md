@@ -47,5 +47,4 @@ External Resources Used
 https://www.w3schools.com/java/java_ref_reference.asp
 https://docs.spring.io/spring-boot/reference/index.html
 
-example of what it looks like is the png file called result.png
 
